@@ -1,46 +1,37 @@
-const { Sequelize } = require('sequelize');
-const config = require('../core/config');
-const logger = require('../core/logger');
+const { DataTypes } = require('sequelize');
 
-const sequelize = new Sequelize(config.dbUrl, {
-    dialect: 'postgres',
-    logging: (msg) => logger.debug(msg),
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-    }
-});
-
-// مدل‌ها رو اینجا تعریف کن
-const User = require('./models/User')(sequelize);
-const Config = require('./models/Config')(sequelize);
-const Log = require('./models/Log')(sequelize);
-
-// ارتباطات
-User.hasMany(Config, { foreignKey: 'userId' });
-Config.belongsTo(User, { foreignKey: 'userId' });
-
-User.hasMany(Log, { foreignKey: 'userId' });
-Log.belongsTo(User, { foreignKey: 'userId' });
-
-const initDb = async () => {
-    try {
-        await sequelize.authenticate();
-        logger.info('✅ Database connected');
-        await sequelize.sync({ alter: true });
-        logger.info('✅ Database synced');
-    } catch (error) {
-        logger.error('❌ Database error:', error);
-        throw error;
-    }
-};
-
-module.exports = {
-    sequelize,
-    User,
-    Config,
-    Log,
-    initDb
+module.exports = (sequelize) => {
+    const User = sequelize.define('User', {
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true
+        },
+        username: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true
+        },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        email: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        role: {
+            type: DataTypes.ENUM('admin', 'user'),
+            defaultValue: 'user'
+        },
+        apiKey: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        telegramId: {
+            type: DataTypes.STRING,
+            allowNull: true
+        }
+    });
+    return User;
 };
