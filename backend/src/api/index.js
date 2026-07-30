@@ -1,9 +1,9 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize } = require('sequelize');
 const config = require('../core/config');
 const logger = require('../core/logger');
 const path = require('path');
 
-// اگر DATABASE_URL وجود نداشت، از SQLite استفاده کن
+// انتخاب دیتابیس (SQLite پیش‌فرض)
 let sequelize;
 if (config.dbUrl && config.dbUrl.startsWith('postgres')) {
     sequelize = new Sequelize(config.dbUrl, {
@@ -12,7 +12,6 @@ if (config.dbUrl && config.dbUrl.startsWith('postgres')) {
         pool: { max: 5, min: 0, acquire: 30000, idle: 10000 }
     });
 } else {
-    // استفاده از SQLite پیش‌فرض
     const sqlitePath = path.join(__dirname, '../../../grootz.sqlite');
     sequelize = new Sequelize({
         dialect: 'sqlite',
@@ -22,7 +21,7 @@ if (config.dbUrl && config.dbUrl.startsWith('postgres')) {
     logger.info(`📁 Using SQLite database at ${sqlitePath}`);
 }
 
-// تعریف مدل‌ها (همان کد قبلی)
+// ایمپورت مدل‌ها به صورت تابع
 const User = require('./models/User')(sequelize);
 const Config = require('./models/Config')(sequelize);
 const Log = require('./models/Log')(sequelize);
