@@ -11,7 +11,7 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        userId: {
+        userId: {  // ← اینجا رو اصلاح کن
             type: DataTypes.UUID,
             allowNull: true
         },
@@ -19,7 +19,7 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        userAgent: {
+        userAgent: {  // ← این رو هم اضافه کن (اختیاری)
             type: DataTypes.TEXT,
             allowNull: true
         },
@@ -31,6 +31,10 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: true
         }
+    }, {
+        timestamps: true,  // ← createdAt و updatedAt خودکار
+        paranoid: false
     });
+
     return Log;
 };
